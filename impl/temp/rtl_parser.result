@@ -1,10 +1,60 @@
 [
  {
-  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/regfile.v",
+  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
   "InstLine" : 1,
-  "InstName" : "regfile",
-  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/regfile.v",
+  "InstName" : "top",
+  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
   "ModuleLine" : 1,
-  "ModuleName" : "regfile"
+  "ModuleName" : "top",
+  "SubInsts" : [
+   {
+    "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+    "InstLine" : 34,
+    "InstName" : "u_pc_reg",
+    "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/pc_reg.v",
+    "ModuleLine" : 1,
+    "ModuleName" : "pc_reg"
+   },
+   {
+    "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+    "InstLine" : 42,
+    "InstName" : "u_decoder",
+    "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/decoder.v",
+    "ModuleLine" : 12,
+    "ModuleName" : "decoder"
+   },
+   {
+    "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+    "InstLine" : 53,
+    "InstName" : "u_imm_gen",
+    "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/imm_gen.v",
+    "ModuleLine" : 1,
+    "ModuleName" : "imm_gen"
+   },
+   {
+    "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+    "InstLine" : 58,
+    "InstName" : "u_regfile",
+    "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/regfile.v",
+    "ModuleLine" : 1,
+    "ModuleName" : "regfile"
+   },
+   {
+    "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+    "InstLine" : 72,
+    "InstName" : "u_alu",
+    "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/alu.v",
+    "ModuleLine" : 13,
+    "ModuleName" : "alu"
+   }
+  ]
+ },
+ {
+  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "InstLine" : 1,
+  "InstName" : "debounce",
+  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "ModuleLine" : 1,
+  "ModuleName" : "debounce"
  }
 ]

@@ -1,0 +1,15 @@
+# Gowin
+impl/
+*.gprj.user
+tb
+
+# Icarus Verilog
+*.vcd
+sim
+*.out
+
+# VSCode
+.vscode/
+
+# Windows
+Thumbs.db

@@ -3,7 +3,7 @@ module top(
     input rst_n,
 
     output [31:0] inst_addr,
-    input [31:0] inst,
+    input [31:0] inst
 );
 
     wire [31:0] pc;

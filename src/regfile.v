@@ -23,7 +23,7 @@ module regfile(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             for (i=0;i<32;i = i+ 1)begin
-                reg[i] <= 32'b0;
+                regs[i] <= 32'b0;
             end 
         end else if (we && rd_addr != 0) begin
                 regs[rd_addr] <= rd_data;
@@ -33,5 +33,5 @@ module regfile(
     //read logic
     assign rs1_data = (rs1_addr == 0) ? 32'b0 : regs[rs1_addr];
     assign rs2_data = (rs2_addr == 0) ? 32'b0 : regs[rs2_addr];
-    
+
 endmodule

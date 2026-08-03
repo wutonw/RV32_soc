@@ -7,6 +7,7 @@
 `define OP_LUI      7'b0110111  // LUI
 `define OP_AUIPC    7'b0010111  // AUIPC
 `define OP_JAL      7'b1101111  // JAL
+`define OP_JALR     7'b1100111
 
 module decoder(
     input [31:0] inst,//machine code instruction
@@ -21,7 +22,7 @@ module decoder(
     output reg alu_src,//0:rs2_data,1:imm
     output reg [3:0] alu_op,//ALU operation
     output reg mem_we,//memory wr_en
-    output reg mem_to_reg,//0:alu_result,1:mem_data
+    output reg mem_to_reg//0:alu_result,1:mem_data
 );
 
     wire [6:0] opcode = inst[6:0];
