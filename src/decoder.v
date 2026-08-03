@@ -103,10 +103,18 @@ module decoder(
             `OP_BRANCH:begin
                 reg_we =1'b0;
                 alu_src = 1'b0;//rs2
-                alu_op = `ALU_SUB;//compare rs1 and rs2 (zero flag)
                 mem_we =1'b0;
                 wb_sel =2'b00;
                 branch = 1'b1;
+                case (funct3)
+                    3'b000: alu_op = `ALU_BEQ; // BEQ
+                    3'b001: alu_op = `ALU_BNE; // BNE
+                    3'b100: alu_op = `ALU_BLT; // BLT
+                    3'b101: alu_op = `ALU_BGE; // BGE
+                    3'b110: alu_op = `ALU_BLTU;// BLTU
+                    3'b111: alu_op = `ALU_BGEU;// BGEU
+                    default: alu_op = `ALU_BEQ;
+                endcase
             end
 
             //JAL
