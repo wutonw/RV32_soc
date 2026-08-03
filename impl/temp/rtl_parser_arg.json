@@ -2,11 +2,11 @@
  "Device" : "GW2A-18C",
  "Files" : [
   {
-   "Path" : "D:/aaa1verilog_project/rv32_soc/src/regfile.v",
+   "Path" : "D:/aaa1verilog_project/rv32_soc/src/alu.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "D:/aaa1verilog_project/rv32_soc/src/alu.v",
+   "Path" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
    "Type" : "verilog"
   },
   {
@@ -18,15 +18,19 @@
    "Type" : "verilog"
   },
   {
-   "Path" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
-   "Type" : "verilog"
-  },
-  {
    "Path" : "D:/aaa1verilog_project/rv32_soc/src/pc_reg.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+   "Path" : "D:/aaa1verilog_project/rv32_soc/src/regfile.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
    "Type" : "verilog"
   }
  ],

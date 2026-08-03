@@ -22,7 +22,12 @@ module decoder(
     output reg alu_src,//0:rs2_data,1:imm
     output reg [3:0] alu_op,//ALU operation
     output reg mem_we,//memory wr_en
-    output reg mem_to_reg//0:alu_result,1:mem_data
+    output reg [1:0] wb_sel//00:alu_result, 01:mem_data, 10:PC+4
+
+    //pc jump control signals
+    output reg branch,
+    output reg jump,
+    output reg jump_reg
 );
 
     wire [6:0] opcode = inst[6:0];
@@ -39,7 +44,10 @@ module decoder(
         alu_src    = 1'b0;  //default rs2
         alu_op     = `ALU_ADD;
         mem_we     = 1'b0;
-        mem_to_reg = 1'b0;
+        wb_sel     = 2'b00;
+        branch     = 1'b0;
+        jump       = 1'b0;
+        jump_reg   = 1'b0;
 
         case(opcode)
             //R-Type
@@ -47,7 +55,7 @@ module decoder(
                 reg_we = 1'b1;//to regfile
                 alu_src = 1'b0;//rs2
                 mem_we = 1'b0;//not to memory
-                mem_to_reg = 1'b0;//from alu
+                wb_sel = 2'b00;//from alu
 
                 case (funct3)
                     3'b000:  alu_op = (funct7[5]) ? `ALU_SUB : `ALU_ADD; // funct7[5]==1 -> SUB
@@ -63,7 +71,7 @@ module decoder(
                 reg_we =1'b1;
                 alu_src = 1'b1;//imm
                 mem_we =1'b0;
-                mem_to_reg =1'b0;
+                wb_sel =2'b00;
 
                 case (funct3)
                     3'b000: alu_op = `ALU_ADD; // ADDI
@@ -79,7 +87,7 @@ module decoder(
                 alu_src = 1'b1;//add+imm_offest
                 alu_op = `ALU_ADD;
                 mem_we =1'b0;
-                mem_to_reg =1'b1;//from memory
+                wb_sel =2'b01;//from memory
             end
 
             //Store
@@ -88,16 +96,37 @@ module decoder(
                 alu_src = 1'b1;//add+imm_offest
                 alu_op = `ALU_ADD;
                 mem_we =1'b1;//to memory
-                mem_to_reg =1'b0;
+                wb_sel =2'b00;
             end
 
-            //Branch
+            //Branch(BEQ)
             `OP_BRANCH:begin
                 reg_we =1'b0;
                 alu_src = 1'b0;//rs2
                 alu_op = `ALU_SUB;//compare rs1 and rs2 (zero flag)
                 mem_we =1'b0;
-                mem_to_reg =1'b0;
+                wb_sel =2'b00;
+                branch = 1'b1;
+            end
+
+            //JAL
+            `OP_JAL:begin
+                reg_we =1'b1;//pc=pc+4 保存返回地址
+                alu_src = 1'b0;
+                alu_op = `ALU_ADD;
+                mem_we =1'b0;
+                wb_sel =2'b10;//pc+4
+                jump = 1'b1;
+            end
+
+            //JALR
+            `OP_JALR:begin
+                reg_we =1'b1;//pc=pc+4 保存返回地址
+                alu_src = 1'b1;//rs1+imm
+                alu_op = `ALU_ADD;
+                mem_we =1'b0;
+                wb_sel =2'b10;//pc+4
+                jump_reg = 1'b1;
             end
 
             default: ;

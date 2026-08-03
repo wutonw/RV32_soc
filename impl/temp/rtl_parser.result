@@ -1,5 +1,13 @@
 [
  {
+  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "InstLine" : 1,
+  "InstName" : "debounce",
+  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "ModuleLine" : 1,
+  "ModuleName" : "debounce"
+ },
+ {
   "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
   "InstLine" : 1,
   "InstName" : "top",
@@ -50,11 +58,11 @@
   ]
  },
  {
-  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
   "InstLine" : 1,
-  "InstName" : "debounce",
-  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "InstName" : "data_ram",
+  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
   "ModuleLine" : 1,
-  "ModuleName" : "debounce"
+  "ModuleName" : "data_ram"
  }
 ]

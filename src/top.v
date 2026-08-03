@@ -15,7 +15,10 @@ module top(
     wire alu_src;
     wire [3:0] alu_op;
     wire mem_we;
-    wire mem_to_reg;
+    wire [1:0] wb_sel;
+    wire branch;
+    wire jump;
+    wire jump_reg;
 
     //RF
     wire [31:0] rs1_data;
@@ -31,9 +34,18 @@ module top(
 
     wire [31:0] reg_write_data;
 
+    //ram
+    wire [31:0] mem_read_data;
+
     pc_reg u_pc_reg(
         .clk(clk),
         .rst_n(rst_n),
+        .imm(imm),
+        .alu_result(alu_result),
+        .branch(branch),
+        .jump(jump),
+        .jump_reg(jump_reg),
+        .zero(alu_zero),
         .pc(pc)
     );
     assign inst_addr = pc;
@@ -48,7 +60,11 @@ module top(
         .alu_src    (alu_src),
         .alu_op     (alu_op),
         .mem_we     (mem_we),
-        .mem_to_reg (mem_to_reg)
+        .wb_sel     (wb_sel),
+
+        .branch     (branch),
+        .jump       (jump), 
+        .jump_reg   (jump_reg)
     );
     imm_gen u_imm_gen (
         .inst (inst),
@@ -76,5 +92,17 @@ module top(
         .result (alu_result),
         .zero   (alu_zero)
     );
-    assign reg_write_data = alu_result;
+
+    data_ram u_data_ram (
+        .clk   (clk),
+        .we    (mem_we),
+        .addr  (alu_result),
+        .wdata (rs2_data),
+        .rdata (mem_read_data)
+    );
+
+    wire [31:0] pc_plus_4 = pc + 32'd4;
+    assign reg_write_data = (wb_sel == 2'b10) ? pc_plus_4 :
+                            (wb_sel == 2'b01) ? mem_read_data :
+                            alu_result;
 endmodule
