@@ -25,6 +25,10 @@ module decoder(
     output reg [1:0] wb_sel,//00:alu_result, 01:mem_data, 10:PC+4
     output reg [1:0] alu_op1_sel,//'00':rs1_data, '01':PC, '10':0 (用于LUI)
 
+    //size of memory access
+    output reg [1:0] mem_size, //00:byte, 01:halfword, 10:word
+    output reg mem_ext_u, //0:sign-extend, 1:zero-extend
+
     //pc jump control signals
     output reg branch,
     output reg jump,
@@ -50,6 +54,8 @@ module decoder(
         branch     = 1'b0;
         jump       = 1'b0;
         jump_reg   = 1'b0;
+        mem_size   = 2'b10; //default word
+        mem_ext_u  = 1'b0;  //default sign-extend
 
         case(opcode)
             //R-Type
@@ -90,6 +96,9 @@ module decoder(
                 alu_op = `ALU_ADD;
                 mem_we =1'b0;
                 wb_sel =2'b01;//from memory
+
+                mem_size = funct3[1:0];
+                mem_ext_u = funct3[2]; // 0: sign-extend, 1: zero-extend
             end
 
             //Store
@@ -99,9 +108,10 @@ module decoder(
                 alu_op = `ALU_ADD;
                 mem_we =1'b1;//to memory
                 wb_sel =2'b00;
+                mem_size = funct3[1:0];// 00:SB, 01:SH, 10:SW
             end
 
-            //Branch(BEQ)
+            //Branch
             `OP_BRANCH:begin
                 reg_we =1'b0;
                 alu_src = 1'b0;//rs2

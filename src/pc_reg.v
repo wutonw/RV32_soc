@@ -7,11 +7,14 @@ module pc_reg(
     input jump,
     input jump_reg,
     input zero,
+    input stall,
     output reg [31:0] pc
 );
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             pc <= 32'b0;
+        end else if (stall) begin
+            pc <= pc;
         end else begin
             if(branch == 1 && zero ==1 || jump == 1)begin
                 pc <= pc + imm;
