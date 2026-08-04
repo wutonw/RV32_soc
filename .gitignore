@@ -7,6 +7,7 @@ tb
 *.vcd
 sim
 *.out
+*.pdf
 
 # VSCode
 .vscode/

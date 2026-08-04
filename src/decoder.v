@@ -22,7 +22,8 @@ module decoder(
     output reg alu_src,//0:rs2_data,1:imm
     output reg [3:0] alu_op,//ALU operation
     output reg mem_we,//memory wr_en
-    output reg [1:0] wb_sel//00:alu_result, 01:mem_data, 10:PC+4
+    output reg [1:0] wb_sel,//00:alu_result, 01:mem_data, 10:PC+4
+    output reg [1:0] alu_op1_sel,//'00':rs1_data, '01':PC, '10':0 (用于LUI)
 
     //pc jump control signals
     output reg branch,
@@ -45,6 +46,7 @@ module decoder(
         alu_op     = `ALU_ADD;
         mem_we     = 1'b0;
         wb_sel     = 2'b00;
+        alu_op1_sel = 2'b00; //default rs1
         branch     = 1'b0;
         jump       = 1'b0;
         jump_reg   = 1'b0;
@@ -135,6 +137,26 @@ module decoder(
                 mem_we =1'b0;
                 wb_sel =2'b10;//pc+4
                 jump_reg = 1'b1;
+            end
+
+            //LUI
+            `OP_LUI:begin
+                reg_we = 1'b1;
+                alu_src = 1'b1;//imm
+                alu_op = `ALU_ADD;
+                mem_we = 1'b0;
+                wb_sel = 2'b00;
+                alu_op1_sel = 2'b10; //0
+            end
+
+            //AUIPC
+            `OP_AUIPC:begin
+                reg_we = 1'b1;
+                alu_src = 1'b1;//imm
+                alu_op = `ALU_ADD;
+                mem_we = 1'b0;
+                wb_sel = 2'b00;
+                alu_op1_sel = 2'b01; //PC
             end
 
             default: ;

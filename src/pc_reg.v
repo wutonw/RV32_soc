@@ -1,7 +1,7 @@
 module pc_reg(
     input clk,
     input rst_n,
-    input imm,
+    input [31:0] imm,
     input [31:0] alu_result,
     input branch,
     input jump,

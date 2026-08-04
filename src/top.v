@@ -16,6 +16,7 @@ module top(
     wire [3:0] alu_op;
     wire mem_we;
     wire [1:0] wb_sel;
+    wire [1:0] alu_op1_sel;
     wire branch;
     wire jump;
     wire jump_reg;
@@ -31,6 +32,7 @@ module top(
     wire [31:0] alu_result;
     wire alu_zero;
     wire [31:0] alu_operand_b;
+    wire [31:0] alu_operand_a;
 
     wire [31:0] reg_write_data;
 
@@ -61,7 +63,7 @@ module top(
         .alu_op     (alu_op),
         .mem_we     (mem_we),
         .wb_sel     (wb_sel),
-
+        .alu_op1_sel (alu_op1_sel),
         .branch     (branch),
         .jump       (jump), 
         .jump_reg   (jump_reg)
@@ -84,10 +86,13 @@ module top(
     );
 
     //EX
+    assign alu_operand_a= (alu_op1_sel == 2'b01) ? pc :
+                        (alu_op1_sel == 2'b10) ? 32'b0 :
+                        rs1_data;
     assign alu_operand_b = (alu_src) ? imm : rs2_data;
     alu u_alu (
         .alu_op (alu_op),
-        .op1    (rs1_data),
+        .op1    (alu_operand_a),
         .op2    (alu_operand_b),
         .result (alu_result),
         .zero   (alu_zero)
