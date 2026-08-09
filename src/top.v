@@ -1,11 +1,11 @@
 module top(
     input clk,
-    input rst_n,
+    input raw_rst_n,
 
     output [31:0] inst_addr,
     input [31:0] inst
 );
-
+    wire rst_n;
     wire [31:0] pc;
     wire stall;
     //decoder
@@ -44,6 +44,12 @@ module top(
 
     assign inst_addr = pc;
     assign stall = 1'b0;//暂时不暂停
+
+    debounce u_debounce(
+        .clk(clk),
+        .key_in(raw_rst_n),
+        .key_out(rst_n)
+    );
 
     pc_reg u_pc_reg(
         .clk(clk),
@@ -124,7 +130,7 @@ module top(
                     ram_wdata = {2{rs2_data[15:0]}};
                     ram_we = (addr_offset[1]) ? 4'b1100 : 4'b0011;
                 end
-                3'b10:begin //word
+                2'b10:begin //word
                     ram_wdata = rs2_data;
                     ram_we = 4'b1111;
                 end
@@ -134,9 +140,12 @@ module top(
 
     //LSU - load
     wire [31:0] raw_mem_data;
+    reg [15:0] hw;
     reg  [31:0] final_mem_data;
     reg [7:0] b;
     always @(*)begin
+        b = 8'b0;
+        hw = 16'b0;
         final_mem_data = raw_mem_data;//default lw
         case(mem_size)
             2'b00:begin //byte
@@ -149,7 +158,7 @@ module top(
                 final_mem_data = (mem_ext_u) ? {24'b0, b} : {{24{b[7]}}, b};
             end
             2'b01:begin //halfword
-                wire [15:0] hw = addr_offset[1] ? raw_mem_data[31:16] : raw_mem_data[15:0];
+                hw = addr_offset[1] ? raw_mem_data[31:16] : raw_mem_data[15:0];
                 final_mem_data = (mem_ext_u) ? {16'b0, hw} : {{16{hw[15]}}, hw};
             end
             2'b10:begin //word

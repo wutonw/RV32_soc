@@ -3,7 +3,7 @@ module data_ram(
     input [3:0] we,//from mem_we(decoder)
     input [31:0] addr,
     input [31:0] wdata,
-    output reg [31:0] rdata
+    output [31:0] rdata
 );
     //1KB RAM
     reg [31:0] ram [0:255];

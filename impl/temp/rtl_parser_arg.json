@@ -6,6 +6,14 @@
    "Type" : "verilog"
   },
   {
+   "Path" : "D:/aaa1verilog_project/rv32_soc/src/axi_master_bridge.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
+   "Type" : "verilog"
+  },
+  {
    "Path" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
    "Type" : "verilog"
   },
@@ -27,10 +35,6 @@
   },
   {
    "Path" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
-   "Type" : "verilog"
-  },
-  {
-   "Path" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
    "Type" : "verilog"
   }
  ],

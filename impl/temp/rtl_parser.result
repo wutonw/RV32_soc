@@ -1,11 +1,11 @@
 [
  {
-  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/axi_master_bridge.v",
   "InstLine" : 1,
-  "InstName" : "debounce",
-  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+  "InstName" : "axi_master_bridge",
+  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/axi_master_bridge.v",
   "ModuleLine" : 1,
-  "ModuleName" : "debounce"
+  "ModuleName" : "axi_master_bridge"
  },
  {
   "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
@@ -17,7 +17,15 @@
   "SubInsts" : [
    {
     "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
-    "InstLine" : 34,
+    "InstLine" : 48,
+    "InstName" : "u_debounce",
+    "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/debounce.v",
+    "ModuleLine" : 1,
+    "ModuleName" : "debounce"
+   },
+   {
+    "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+    "InstLine" : 54,
     "InstName" : "u_pc_reg",
     "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/pc_reg.v",
     "ModuleLine" : 1,
@@ -25,7 +33,7 @@
    },
    {
     "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
-    "InstLine" : 42,
+    "InstLine" : 68,
     "InstName" : "u_decoder",
     "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/decoder.v",
     "ModuleLine" : 12,
@@ -33,7 +41,7 @@
    },
    {
     "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
-    "InstLine" : 53,
+    "InstLine" : 85,
     "InstName" : "u_imm_gen",
     "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/imm_gen.v",
     "ModuleLine" : 1,
@@ -41,7 +49,7 @@
    },
    {
     "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
-    "InstLine" : 58,
+    "InstLine" : 91,
     "InstName" : "u_regfile",
     "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/regfile.v",
     "ModuleLine" : 1,
@@ -49,20 +57,20 @@
    },
    {
     "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
-    "InstLine" : 72,
+    "InstLine" : 108,
     "InstName" : "u_alu",
     "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/alu.v",
-    "ModuleLine" : 13,
+    "ModuleLine" : 20,
     "ModuleName" : "alu"
+   },
+   {
+    "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/top.v",
+    "InstLine" : 172,
+    "InstName" : "u_data_ram",
+    "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
+    "ModuleLine" : 1,
+    "ModuleName" : "data_ram"
    }
   ]
- },
- {
-  "InstFile" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
-  "InstLine" : 1,
-  "InstName" : "data_ram",
-  "ModuleFile" : "D:/aaa1verilog_project/rv32_soc/src/data_ram.v",
-  "ModuleLine" : 1,
-  "ModuleName" : "data_ram"
  }
 ]
