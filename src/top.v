@@ -197,7 +197,7 @@ module top(
     // Stall (暂停) 机制真正接入
     // =========================================================================
     wire axi_stall;
-    assign stall = axi_stall; // 替换掉之前写死的 0 
+    assign stall = axi_stall|| load_stall; // 替换掉之前写死的 0 
 
     // =========================================================================
     // 读数据 MUX：把外设读回来的数据和 RAM 读出来的数据合并，送给 LSU 去截取
@@ -294,4 +294,23 @@ module top(
         .uart_tx_busy (uart_tx_busy)
     );
 
+    wire ram_load_req = (wb_sel == 2'b01) && is_ram;
+
+    // 2. 用一个触发器记录等待状态
+    reg load_wait;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            load_wait <= 1'b0;
+        end else begin
+            // 只要发起 ram 读且还没进入等待态，就拉高一拍 wait；下一拍自动清零
+            if (ram_load_req && !load_wait) begin
+                load_wait <= 1'b1;
+            end else begin
+                load_wait <= 1'b0;
+            end
+        end
+    end
+
+    // 3. 生成 Load 暂停信号：刚发起请求且 wait 还没拉高时暂停
+    wire load_stall = ram_load_req && !load_wait;
 endmodule

@@ -3,7 +3,7 @@ module data_ram(
     input [3:0] we,//from mem_we(decoder)
     input [31:0] addr,
     input [31:0] wdata,
-    output [31:0] rdata
+    output reg [31:0] rdata
 );
     //1KB RAM
     reg [31:0] ram [0:255];
@@ -16,8 +16,10 @@ module data_ram(
         if (we[1]) ram[word_index][15:8] <= wdata[15:8];
         if (we[2]) ram[word_index][23:16] <= wdata[23:16];
         if (we[3]) ram[word_index][31:24] <= wdata[31:24];
+
+        rdata <= ram[word_index];
     end
     
     //read data from ram
-    assign rdata = ram[word_index];
+    //assign rdata = ram[word_index];
 endmodule
