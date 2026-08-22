@@ -1,0 +1,14 @@
+// Tang Primer 20K / GW2A-LV18PG256C8/I7 board-level pins.
+// Instruction address and instruction data are internal to board_top.
+
+IO_LOC "clk" H11;
+IO_PORT "clk" IO_TYPE=LVCMOS18 PULL_MODE=UP BANK_VCCIO=1.8;
+
+IO_LOC "raw_rst_n" T3;
+IO_PORT "raw_rst_n" IO_TYPE=LVCMOS18 PULL_MODE=UP BANK_VCCIO=1.8;
+
+IO_LOC "uart_tx_pin" M11;
+IO_PORT "uart_tx_pin" IO_TYPE=LVCMOS18 PULL_MODE=UP DRIVE=8 BANK_VCCIO=1.8;
+
+IO_LOC "axi_error_led" L14;
+IO_PORT "axi_error_led" IO_TYPE=LVCMOS18 PULL_MODE=UP DRIVE=8 BANK_VCCIO=1.8;

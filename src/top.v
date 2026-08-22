@@ -3,7 +3,10 @@ module top(
     input raw_rst_n,
 
     output [31:0] inst_addr,
-    input [31:0] inst
+    input [31:0] inst,
+
+    output uart_tx_pin,
+    output axi_error_led
 );
     wire rst_n;
     wire [31:0] pc;
@@ -43,7 +46,6 @@ module top(
     wire [31:0] mem_read_data;
 
     assign inst_addr = pc;
-    assign stall = 1'b0;//暂时不暂停
 
     debounce u_debounce(
         .clk(clk),
@@ -139,7 +141,7 @@ module top(
     end
 
     //LSU - load
-    wire [31:0] raw_mem_data;
+    wire [31:0] raw_mem_data = is_periph ? axi_rdata_out : ram_rdata_out;
     reg [15:0] hw;
     reg  [31:0] final_mem_data;
     reg [7:0] b;
@@ -168,17 +170,128 @@ module top(
         endcase
     end
 
-    wire [3:0] real_ram_we = stall ? 4'b0000 : ram_we;
+    wire [31:0] pc_plus_4 = pc + 32'd4;
+    assign reg_write_data = (wb_sel == 2'b10) ? pc_plus_4 :
+                            (wb_sel == 2'b01) ? final_mem_data:
+                            alu_result;
+
+
+    // =========================================================================
+    // 极简地址路由 (Interconnect)
+    // =========================================================================
+    wire is_periph = (alu_result[31:28] == 4'h4); // 4打头，分配给 AXI 外设
+    wire is_ram    = (alu_result[31:28] == 4'h0); // 0打头，分配给内部 RAM
+
+    // 判断当前是否是真实的访存请求（Store 或 Load）
+    // wb_sel == 2'b01 是咱们之前 Decoder 里定义的 Load 指令写回标志
+    wire is_load = (wb_sel == 2'b01); 
+    wire is_mem_req = mem_we || is_load;
+
+    // AXI 桥接器的请求信号：是外设地址，且有访存需求
+    wire axi_req = is_periph & is_mem_req;
+
+    // RAM 的写使能保护：除了 stall 屏蔽，还要确保地址是 RAM 区域的
+    wire [3:0] real_ram_we = (stall || !is_ram) ? 4'b0000 : ram_we;
+
+    // =========================================================================
+    // Stall (暂停) 机制真正接入
+    // =========================================================================
+    wire axi_stall;
+    assign stall = axi_stall; // 替换掉之前写死的 0 
+
+    // =========================================================================
+    // 读数据 MUX：把外设读回来的数据和 RAM 读出来的数据合并，送给 LSU 去截取
+    // =========================================================================
+    wire [31:0] ram_rdata_out;
+    wire [31:0] axi_rdata_out;
+    // LSU 之前用的 raw_mem_data，现在变成了一个选择器
+
+    // AXI4-Lite 总线连线
+    wire [31:0] awaddr;
+    wire        awvalid;
+    wire        awready;
+    wire [31:0] wdata;
+    wire [3:0]  wstrb;
+    wire        wvalid;
+    wire        wready;
+    wire [1:0]  bresp;
+    wire        bvalid;
+    wire        bready;
+    wire [31:0] araddr;
+    wire        arvalid;
+    wire        arready;
+    wire [31:0] rdata;
+    wire [1:0]  rresp;
+    wire        rvalid;
+    wire        rready;
+
+    // 1. Data RAM 例化 (保持原样，仅改名 rdata)
     data_ram u_data_ram (
         .clk   (clk),
         .we    (real_ram_we),
         .addr  (alu_result),
         .wdata (ram_wdata),
-        .rdata (raw_mem_data)
+        .rdata (ram_rdata_out)
     );
 
-    wire [31:0] pc_plus_4 = pc + 32'd4;
-    assign reg_write_data = (wb_sel == 2'b10) ? pc_plus_4 :
-                            (wb_sel == 2'b01) ? final_mem_data:
-                            alu_result;
+    // 2. AXI Master 桥接器
+    axi_master_bridge u_axi_master (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .axi_error  (axi_error_led),
+        
+        // CPU 侧
+        .cpu_req    (axi_req),
+        .cpu_we     (mem_we),
+        .cpu_addr   (alu_result),
+        .cpu_wdata  (ram_wdata),
+        .cpu_wstrb  (ram_we),
+        .cpu_rdata  (axi_rdata_out),
+        .cpu_stall  (axi_stall),
+        
+        // AXI 侧 (直接怼线)
+        .aw_addr    (awaddr),  .aw_valid (awvalid), .aw_ready (awready),
+        .w_data     (wdata),   .w_strb   (wstrb),   .w_valid  (wvalid),  .w_ready (wready),
+        .b_resp     (bresp),   .b_valid  (bvalid),  .b_ready  (bready),
+        .ar_addr    (araddr),  .ar_valid (arvalid), .ar_ready (arready),
+        .r_data     (rdata),   .r_resp   (rresp),   .r_valid  (rvalid),  .r_ready (rready)
+    );
+
+    // 3. 原生 UART 硬件
+    wire [7:0] uart_tx_data;
+    wire       uart_tx_en;
+    wire       uart_tx_busy;
+    
+    // 没用到 tx_ack 可以悬空不接
+    uart_tx #(
+        .CLK_FREQ(27_000_000), 
+        .BAUD_RATE(115_200)
+    ) u_uart_tx (
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .tx_start (uart_tx_en),
+        .tx_data  (uart_tx_data),
+        .tx       (uart_tx_pin),
+        .tx_busy  (uart_tx_busy),
+        .tx_ack   () 
+    );
+
+    // 4. AXI UART 从机包装器
+    axi_uart_slave u_axi_uart_slave (
+        .aclk         (clk),
+        .aresetn      (rst_n),
+        
+        // AXI 侧
+        .aw_addr      (awaddr),  .aw_valid   (awvalid), .aw_ready (awready),
+        .w_data       (wdata),   .w_strb     (wstrb),   .w_valid  (wvalid),  .w_ready (wready),
+        .b_resp       (bresp),   .b_valid    (bvalid),  .b_ready  (bready),
+        .ar_addr      (araddr),  .ar_valid   (arvalid), .ar_ready (arready),
+        .r_data       (rdata),   .r_resp     (rresp),   .r_valid  (rvalid),  .r_ready (rready),
+        
+        // 硬件驱动侧
+        .uart_tx_data (uart_tx_data),
+        .uart_tx_en   (uart_tx_en),
+        .uart_tx_busy (uart_tx_busy)
+    );
+
 endmodule

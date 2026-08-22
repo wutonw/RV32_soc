@@ -3,6 +3,7 @@ impl/
 *.gprj.user
 tb
 参考文件
+shangweiji
 
 # Icarus Verilog
 *.vcd
